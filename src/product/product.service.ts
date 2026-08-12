@@ -14,4 +14,14 @@ export class ProductService {
   async findAll() {
     return this.productModel.find().exec();
   }
+  async create(data: {
+    name: string;
+    price: number;
+    stock: number;
+    description?: string;
+  }) {
+    const product = new this.productModel(data);
+
+    return product.save();
+  }
 }

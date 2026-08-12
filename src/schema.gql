@@ -2,6 +2,17 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input CreateProductInput {
+  description: String
+  name: String!
+  price: Float!
+  stock: Int!
+}
+
+type Mutation {
+  createProduct(input: CreateProductInput!): Product!
+}
+
 type Product {
   description: String
   id: String!
