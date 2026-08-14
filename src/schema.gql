@@ -11,6 +11,7 @@ input CreateProductInput {
 
 type Mutation {
   createProduct(input: CreateProductInput!): Product!
+  updateProduct(input: UpdateProductInput!): Product!
 }
 
 type Product {
@@ -22,5 +23,14 @@ type Product {
 }
 
 type Query {
+  product(id: ID!): Product!
   products: [Product!]!
+}
+
+input UpdateProductInput {
+  description: String
+  id: ID!
+  name: String
+  price: Float
+  stock: Int
 }
