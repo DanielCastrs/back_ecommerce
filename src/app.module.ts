@@ -5,6 +5,7 @@ import { join } from 'path';
 import { ProductModule } from './product/product.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       sortSchema: true,
     }),
     ProductModule,
+    CategoryModule,
   ],
 })
 export class AppModule {}

@@ -29,4 +29,9 @@ export class ProductResolver {
 
     return this.productService.update(id, data);
   }
+
+  @Mutation(() => Product)
+  async deleteProduct(@Args('id', { type: () => ID }) id: string) {
+    return this.productService.delete(id);
+  }
 }
