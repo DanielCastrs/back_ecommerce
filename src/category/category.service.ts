@@ -16,7 +16,7 @@ export class CategoryService {
     return this.categoryModel.find().exec();
   }
 
-  async findOne(id: string) {
+  async findCategory(id: string) {
     const category = await this.categoryModel.findById(id).exec();
 
     if (!category) {

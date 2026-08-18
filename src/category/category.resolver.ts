@@ -19,7 +19,7 @@ export class CategoryResolver {
     @Args('id', { type: () => ID })
     id: string,
   ) {
-    return this.categoryService.findOne(id);
+    return this.categoryService.findCategory(id);
   }
 
   @Mutation(() => Category)

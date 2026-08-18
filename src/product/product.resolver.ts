@@ -29,7 +29,7 @@ export class ProductResolver {
 
   @Query(() => Product)
   async product(@Args('id', { type: () => ID }) id: string) {
-    return this.productService.findOne(id);
+    return this.productService.findById(id);
   }
 
   @Mutation(() => Product)

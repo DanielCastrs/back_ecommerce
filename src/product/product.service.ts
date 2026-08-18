@@ -26,7 +26,7 @@ export class ProductService {
     return this.productModel.find().exec();
   }
 
-  async findOne(id: string) {
+  async findById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('ID inválido');
     }
