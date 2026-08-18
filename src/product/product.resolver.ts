@@ -1,8 +1,17 @@
-import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  ID,
+  Mutation,
+  Query,
+  Resolver,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { Product } from './entities/product.entity';
 import { ProductService } from './product.service';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
+import { Category } from 'src/category/entities/category.entity';
 
 @Resolver(() => Product)
 export class ProductResolver {
@@ -11,6 +20,11 @@ export class ProductResolver {
   @Query(() => [Product])
   async products() {
     return this.productService.findAll();
+  }
+
+  @ResolveField(() => Category)
+  category(@Parent() product: Product) {
+    return this.productService.findCategory(product.categoryId);
   }
 
   @Query(() => Product)

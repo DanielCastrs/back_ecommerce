@@ -16,6 +16,7 @@ input CreateCategoryInput {
 }
 
 input CreateProductInput {
+  categoryId: ID!
   description: String
   name: String!
   price: Float!
@@ -37,6 +38,8 @@ type Mutation {
 }
 
 type Product {
+  category: Category!
+  categoryId: ID!
   description: String
   id: String!
   name: String!
@@ -58,6 +61,7 @@ input UpdateCategoryInput {
 }
 
 input UpdateProductInput {
+  categoryId: ID
   description: String
   id: ID!
   name: String

@@ -16,4 +16,7 @@ export class UpdateProductInput {
 
   @Field({ nullable: true })
   description?: string;
+
+  @Field(() => ID, { nullable: true })
+  categoryId?: string;
 }
