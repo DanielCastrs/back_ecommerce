@@ -634,8 +634,8 @@ A evolução planejada do projeto é:
 ```text
 1. Product CRUD                         ✅
 2. Category CRUD                        ✅
-3. Relacionar Product + Category       🚧
-4. User                                 ⏳
+3. Relacionar Product + Category        ✅
+4. User                                 🚧
 5. Autenticação JWT                     ⏳
 6. Carrinho                             ⏳
 7. Pedido / Order                       ⏳
