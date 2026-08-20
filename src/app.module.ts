@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CategoryModule } from './category/category.module';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -31,10 +32,15 @@ import { UserModule } from './user/user.module';
       playground: true,
 
       sortSchema: true,
+      context: ({ req, res }) => ({
+        req,
+        res,
+      }),
     }),
     ProductModule,
     CategoryModule,
     UserModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

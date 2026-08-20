@@ -2,6 +2,10 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AuthResponse {
+  accessToken: String!
+}
+
 type Category {
   createdAt: DateTime!
   description: String
@@ -34,6 +38,11 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input LoginInput {
+  email: String!
+  password: String!
+}
+
 type Mutation {
   createCategory(input: CreateCategoryInput!): Category!
   createProduct(input: CreateProductInput!): Product!
@@ -41,6 +50,7 @@ type Mutation {
   deleteCategory(id: ID!): Category!
   deleteProduct(id: ID!): Product!
   deleteUser(id: ID!): User!
+  login(input: LoginInput!): AuthResponse!
   updateCategory(input: UpdateCategoryInput!): Category!
   updateProduct(input: UpdateProductInput!): Product!
   updateUser(input: UpdateUserInput!): User!

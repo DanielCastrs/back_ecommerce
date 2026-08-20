@@ -1,22 +1,10 @@
-import {
-  Injectable,
-} from '@nestjs/common';
-
-import {
-  InjectModel,
-} from '@nestjs/mongoose';
-
-import {
-  Model,
-} from 'mongoose';
-
-import {
-  User,
-  UserDocument,
-} from './schemas/user.schema';
-
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User, UserDocument } from './schemas/user.schema';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -25,87 +13,81 @@ export class UserService {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async create(data: {
-    name: string;
-    email: string;
-    password: string;
-  }) {
-    const user = new this.userModel(data);
+  async create(data: { name: string; email: string; password: string }) {
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    const user = new this.userModel({
+      ...data,
+      password: hashedPassword,
+    });
 
     return user.save();
   }
   async findAll() {
-  return this.userModel.find().exec();
-}
-async findById(id: string) {
-  if (!isValidObjectId(id)) {
-    throw new BadRequestException(
-      'ID do usuário inválido',
-    );
+    return this.userModel.find().exec();
   }
+  async findById(id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('ID do usuário inválido');
+    }
 
-  const user = await this.userModel
-    .findById(id)
-    .exec();
+    const user = await this.userModel.findById(id).exec();
 
-  if (!user) {
-    throw new NotFoundException(
-      'Usuário não encontrado',
-    );
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return user;
   }
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      email?: string;
+      password?: string;
+    },
+  ) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('ID do usuário inválido');
+    }
 
-  return user;
-}
-async update(
-  id: string,
-  data: {
-    name?: string;
-    email?: string;
-    password?: string;
-  },
-) {
-  if (!isValidObjectId(id)) {
-    throw new BadRequestException(
-      'ID do usuário inválido',
-    );
-  }
+    const updateData = {
+      ...data,
+    };
 
-  const user = await this.userModel
-    .findByIdAndUpdate(
-      id,
-      data,
-      {
+    if (data.password) {
+      updateData.password = await bcrypt.hash(data.password, 10);
+    }
+
+    const user = await this.userModel
+      .findByIdAndUpdate(id, updateData, {
         new: true,
         runValidators: true,
-      },
-    )
-    .exec();
+      })
+      .exec();
 
-  if (!user) {
-    throw new NotFoundException(
-      'Usuário não encontrado',
-    );
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return user;
   }
 
-  return user;
-}
-async remove(id: string) {
-  if (!isValidObjectId(id)) {
-    throw new BadRequestException(
-      'ID do usuário inválido',
-    );
+  async remove(id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('ID do usuário inválido');
+    }
+
+    const user = await this.userModel.findByIdAndDelete(id).exec();
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return user;
   }
 
-  const user = await this.userModel
-    .findByIdAndDelete(id)
-    .exec();
-
-  if (!user) {
-    throw new NotFoundException(
-      'Usuário não encontrado',
-    );
+  async findByEmail(email: string) {
+    return this.userModel.findOne({ email }).exec();
   }
-
-  return user;
-}
 }
