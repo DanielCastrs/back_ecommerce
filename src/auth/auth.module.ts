@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-
+import { RolesGuard } from './guards/roles.guard';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { UserModule } from 'src/user/user.module';
@@ -19,7 +19,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
     }),
   ],
 
-  providers: [AuthService, AuthResolver, JwtAuthGuard],
+  providers: [AuthService, AuthResolver, JwtAuthGuard, RolesGuard],
 
   exports: [JwtAuthGuard],
 })

@@ -52,6 +52,7 @@ type Mutation {
   deleteUser(id: ID!): User!
   login(input: LoginInput!): AuthResponse!
   updateCategory(input: UpdateCategoryInput!): Category!
+  updateMyProfile(input: UpdateMyProfileInput!): User!
   updateProduct(input: UpdateProductInput!): Product!
   updateUser(input: UpdateUserInput!): User!
 }
@@ -69,6 +70,7 @@ type Product {
 type Query {
   categories: [Category!]!
   category(id: ID!): Category!
+  me: User!
   product(id: ID!): Product!
   products: [Product!]!
   user(id: ID!): User!
@@ -79,6 +81,12 @@ input UpdateCategoryInput {
   description: String
   id: ID!
   name: String
+}
+
+input UpdateMyProfileInput {
+  email: String
+  name: String
+  password: String
 }
 
 input UpdateProductInput {
@@ -101,4 +109,10 @@ type User {
   email: String!
   id: ID!
   name: String!
+  role: UserRole!
+}
+
+enum UserRole {
+  ADMIN
+  USER
 }

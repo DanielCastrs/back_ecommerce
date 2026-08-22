@@ -125,16 +125,16 @@ src/
 
 ### Responsabilidade das principais camadas
 
-| Camada | Responsabilidade |
-|---|---|
-| **Resolver** | Recebe as requisições GraphQL e direciona para o Service |
-| **Service** | Contém as regras de negócio e comunicação com os Models |
-| **Entity** | Define os objetos disponibilizados pelo GraphQL |
-| **DTO / Input** | Define os dados recebidos pelas Queries e Mutations |
-| **Schema** | Define a estrutura dos documentos no MongoDB |
-| **Module** | Organiza e encapsula cada domínio da aplicação |
-| **Mongoose** | Faz a comunicação entre NestJS e MongoDB |
-| **MongoDB** | Armazena os dados da aplicação |
+| Camada          | Responsabilidade                                         |
+| --------------- | -------------------------------------------------------- |
+| **Resolver**    | Recebe as requisições GraphQL e direciona para o Service |
+| **Service**     | Contém as regras de negócio e comunicação com os Models  |
+| **Entity**      | Define os objetos disponibilizados pelo GraphQL          |
+| **DTO / Input** | Define os dados recebidos pelas Queries e Mutations      |
+| **Schema**      | Define a estrutura dos documentos no MongoDB             |
+| **Module**      | Organiza e encapsula cada domínio da aplicação           |
+| **Mongoose**    | Faz a comunicação entre NestJS e MongoDB                 |
+| **MongoDB**     | Armazena os dados da aplicação                           |
 
 ---
 
@@ -456,13 +456,7 @@ mutation {
 
 ```graphql
 mutation {
-  updateProduct(
-    input: {
-      id: "PRODUCT_ID"
-      price: 3200
-      stock: 15
-    }
-  ) {
+  updateProduct(input: { id: "PRODUCT_ID", price: 3200, stock: 15 }) {
     id
     name
     price
@@ -509,10 +503,7 @@ Delete Category
 ```graphql
 mutation {
   createCategory(
-    input: {
-      name: "Eletrônicos"
-      description: "Produtos eletrônicos"
-    }
+    input: { name: "Eletrônicos", description: "Produtos eletrônicos" }
   ) {
     id
     name
@@ -632,18 +623,23 @@ O relacionamento impede a criação de produtos associados a categorias inexiste
 A evolução planejada do projeto é:
 
 ```text
-1. Product CRUD                         ✅
-2. Category CRUD                        ✅
-3. Relacionar Product + Category        ✅
-4. User                                 🚧
-5. Autenticação JWT                     ⏳
-6. Carrinho                             ⏳
-7. Pedido / Order                       ⏳
-8. Estoque                              ⏳
-9. Pagamento (simulado)                 ⏳
-10. Validações e tratamento de erros    ⏳
-11. Testes                              ⏳
-12. Docker + Deploy                     ⏳
+1. Product CRUD                 ✅
+2. Category CRUD                ✅
+3. Product + Category           ✅
+4. User CRUD                    ✅
+5. bcrypt                       ✅
+6. Login                        ✅
+7. JWT                          ✅
+8. JWT Guard                    ✅
+9. CurrentUser / me             ✅
+10. Roles / Authorization       🚧
+11. Carrinho                    ⏳
+12. Pedido / Order              ⏳
+13. Estoque                     ⏳
+14. Pagamento simulado          ⏳
+15. Validações                  ⏳
+16. Testes                      ⏳
+17. Docker + Deploy             ⏳
 ```
 
 ### Legenda

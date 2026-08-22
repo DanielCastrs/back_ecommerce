@@ -90,4 +90,18 @@ export class UserService {
   async findByEmail(email: string) {
     return this.userModel.findOne({ email }).exec();
   }
+
+  async findByIdWithoutPassword(id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('ID do usuário inválido');
+    }
+
+    const user = await this.userModel.findById(id).select('-password').exec();
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return user;
+  }
 }
