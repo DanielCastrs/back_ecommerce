@@ -632,9 +632,9 @@ A evolução planejada do projeto é:
 7. JWT                          ✅
 8. JWT Guard                    ✅
 9. CurrentUser / me             ✅
-10. Roles / Authorization       🚧
-11. Carrinho                    ⏳
-12. Pedido / Order              ⏳
+10. Roles / Authorization       ✅
+11. Carrinho                    ✅
+12. Pedido / Order              🚧
 13. Estoque                     ⏳
 14. Pagamento simulado          ⏳
 15. Validações                  ⏳

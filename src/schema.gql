@@ -2,8 +2,25 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AddToCartInput {
+  productId: ID!
+  quantity: Int!
+}
+
 type AuthResponse {
   accessToken: String!
+}
+
+type Cart {
+  id: ID!
+  items: [CartItem!]!
+  total: Float!
+}
+
+type CartItem {
+  product: Product!
+  quantity: Int!
+  subtotal: Float!
 }
 
 type Category {
@@ -44,17 +61,39 @@ input LoginInput {
 }
 
 type Mutation {
+  addToCart(input: AddToCartInput!): Cart!
+  clearCart: Cart!
   createCategory(input: CreateCategoryInput!): Category!
+  createOrder: Order!
   createProduct(input: CreateProductInput!): Product!
   createUser(input: CreateUserInput!): User!
   deleteCategory(id: ID!): Category!
   deleteProduct(id: ID!): Product!
   deleteUser(id: ID!): User!
   login(input: LoginInput!): AuthResponse!
+  removeFromCart(productId: String!): Cart!
+  updateCartItem(input: UpdateCartItemInput!): Cart!
   updateCategory(input: UpdateCategoryInput!): Category!
   updateMyProfile(input: UpdateMyProfileInput!): User!
   updateProduct(input: UpdateProductInput!): Product!
   updateUser(input: UpdateUserInput!): User!
+}
+
+type Order {
+  createdAt: DateTime!
+  id: ID!
+  items: [OrderItem!]!
+  status: String!
+  total: Float!
+  updatedAt: DateTime!
+}
+
+type OrderItem {
+  name: String!
+  productId: ID!
+  quantity: Int!
+  subtotal: Float!
+  unitPrice: Float!
 }
 
 type Product {
@@ -71,10 +110,16 @@ type Query {
   categories: [Category!]!
   category(id: ID!): Category!
   me: User!
+  myCart: Cart!
   product(id: ID!): Product!
   products: [Product!]!
   user(id: ID!): User!
   users: [User!]!
+}
+
+input UpdateCartItemInput {
+  productId: ID!
+  quantity: Int!
 }
 
 input UpdateCategoryInput {

@@ -1,0 +1,40 @@
+import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
+
+@ObjectType()
+export class OrderItem {
+  @Field(() => ID)
+  productId: string;
+
+  @Field()
+  name: string;
+
+  @Field(() => Float)
+  unitPrice: number;
+
+  @Field(() => Int)
+  quantity: number;
+
+  @Field(() => Float)
+  subtotal: number;
+}
+
+@ObjectType()
+export class Order {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => [OrderItem])
+  items: OrderItem[];
+
+  @Field(() => Float)
+  total: number;
+
+  @Field()
+  status: string;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
+}
