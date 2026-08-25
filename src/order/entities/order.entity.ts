@@ -1,4 +1,6 @@
 import { Field, Float, ID, Int, ObjectType } from '@nestjs/graphql';
+import { registerEnumType } from '@nestjs/graphql';
+import { OrderStatus } from '../enums/order-status.enum';
 
 @ObjectType()
 export class OrderItem {
@@ -29,8 +31,8 @@ export class Order {
   @Field(() => Float)
   total: number;
 
-  @Field()
-  status: string;
+  @Field(() => OrderStatus)
+  status: OrderStatus;
 
   @Field()
   createdAt: Date;

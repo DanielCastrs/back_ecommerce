@@ -8,8 +8,13 @@ import { Model } from 'mongoose';
 import { Order, OrderDocument, OrderItem } from './schemas/order.schema';
 import { Cart, CartDocument } from '../cart/schemas/cart.schema';
 import { Product, ProductDocument } from '../product/schemas/product.schema';
+interface StockUpdate {
+  product: ProductDocument;
+  quantity: number;
+}
 import { Types } from 'mongoose'; // valor real
 import { Schema as MongooseSchema } from 'mongoose'; // só pro @Prop()
+import { OrderStatus } from './enums/order-status.enum';
 
 @Injectable()
 export class OrderService {
@@ -39,7 +44,10 @@ export class OrderService {
       );
     }
 
+    //deu erro e precisou de interface StockUpdate, então criei a interface acima
+
     const orderItems: OrderItem[] = [];
+    const stockUpdates: StockUpdate[] = [];
 
     for (const cartItem of cart.items) {
       const product = await this.productModel
@@ -54,32 +62,126 @@ export class OrderService {
 
       if (cartItem.quantity > product.stock) {
         throw new BadRequestException(
-          `Estoque insuficiente para o produto ${product.name}`,
+          `Estoque insuficiente para o produto: ${product.name}`,
         );
       }
 
       const subtotal = product.price * cartItem.quantity;
 
       orderItems.push({
-        productId: product._id as Types.ObjectId,
+        productId: product._id,
         name: product.name,
         unitPrice: product.price,
         quantity: cartItem.quantity,
         subtotal,
       });
 
-      const total = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
-
-      const order = new this.orderModel({
-        userId: new Types.ObjectId(userId),
-        items: orderItems,
-        total,
-        status: 'PENDING',
+      stockUpdates.push({
+        product,
+        quantity: cartItem.quantity,
       });
-
-      await order.save();
-
-      return order;
     }
+
+    const total = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
+
+    const order = new this.orderModel({
+      userId: new Types.ObjectId(userId),
+      items: orderItems,
+      total,
+      status: OrderStatus.PENDING,
+    });
+
+    await order.save();
+
+    for (const stockUpdate of stockUpdates) {
+      stockUpdate.product.stock -= stockUpdate.quantity;
+
+      await stockUpdate.product.save();
+    }
+
+    cart.items = [];
+
+    await cart.save();
+
+    return order;
+  }
+  async findMyOrders(userId: string) {
+    return this.orderModel
+      .find({
+        userId: new Types.ObjectId(userId),
+      })
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
+  async findMyOrder(userId: string, orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('ID do pedido inválido');
+    }
+
+    const order = await this.orderModel
+      .findOne({
+        _id: orderId,
+        userId: new Types.ObjectId(userId),
+      })
+      .exec();
+
+    if (!order) {
+      throw new NotFoundException('Pedido não encontrado');
+    }
+
+    return order;
+  }
+  async findAllOrders() {
+    return this.orderModel.find().sort({ createdAt: -1 }).exec();
+  }
+  async findOrder(orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('ID do pedido inválido');
+    }
+
+    const order = await this.orderModel.findById(orderId).exec();
+
+    if (!order) {
+      throw new NotFoundException('Pedido não encontrado');
+    }
+
+    return order;
+  }
+  async cancelOrder(userId: string, orderId: string) {
+    if (!Types.ObjectId.isValid(orderId)) {
+      throw new BadRequestException('ID do pedido inválido');
+    }
+
+    const order = await this.orderModel.findOne({
+      _id: orderId,
+      userId: new Types.ObjectId(userId),
+    });
+
+    if (!order) {
+      throw new NotFoundException('Pedido não encontrado');
+    }
+
+    if (order.status !== OrderStatus.PENDING) {
+      throw new BadRequestException(
+        'Somente pedidos PENDING podem ser cancelados',
+      );
+    }
+
+    for (const item of order.items) {
+      const product = await this.productModel.findById(item.productId).exec();
+
+      if (!product) {
+        throw new NotFoundException(`Produto ${item.name} não encontrado`);
+      }
+
+      product.stock += item.quantity;
+
+      await product.save();
+    }
+
+    order.status = OrderStatus.CANCELLED;
+
+    return order.save();
   }
 }

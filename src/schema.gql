@@ -62,6 +62,7 @@ input LoginInput {
 
 type Mutation {
   addToCart(input: AddToCartInput!): Cart!
+  cancelOrder(id: ID!): Order!
   clearCart: Cart!
   createCategory(input: CreateCategoryInput!): Category!
   createOrder: Order!
@@ -83,7 +84,7 @@ type Order {
   createdAt: DateTime!
   id: ID!
   items: [OrderItem!]!
-  status: String!
+  status: OrderStatus!
   total: Float!
   updatedAt: DateTime!
 }
@@ -94,6 +95,12 @@ type OrderItem {
   quantity: Int!
   subtotal: Float!
   unitPrice: Float!
+}
+
+enum OrderStatus {
+  CANCELLED
+  PAID
+  PENDING
 }
 
 type Product {
@@ -107,10 +114,13 @@ type Product {
 }
 
 type Query {
+  allOrders: [Order!]!
   categories: [Category!]!
   category(id: ID!): Category!
   me: User!
   myCart: Cart!
+  order(id: ID!): Order!
+  orders: [Order!]!
   product(id: ID!): Product!
   products: [Product!]!
   user(id: ID!): User!

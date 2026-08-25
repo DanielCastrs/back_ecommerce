@@ -634,9 +634,9 @@ A evolução planejada do projeto é:
 9. CurrentUser / me             ✅
 10. Roles / Authorization       ✅
 11. Carrinho                    ✅
-12. Pedido / Order              🚧
-13. Estoque                     ⏳
-14. Pagamento simulado          ⏳
+12. Pedido / Order              ✅
+13. Estoque                     ✅
+14. Pagamento simulado          🚧
 15. Validações                  ⏳
 16. Testes                      ⏳
 17. Docker + Deploy             ⏳

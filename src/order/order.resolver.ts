@@ -1,9 +1,12 @@
-import { Mutation, Resolver, Args } from '@nestjs/graphql';
+import { Mutation, Resolver, Args, Query, ID } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { Order } from './entities/order.entity';
 import { OrderService } from './order.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { UserRole } from 'src/user/enums/user-role.enum';
 
 @Resolver(() => Order)
 export class OrderResolver {
@@ -20,5 +23,55 @@ export class OrderResolver {
     },
   ) {
     return this.orderService.createOrder(user.sub);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Query(() => [Order])
+  orders(
+    @CurrentUser()
+    user: {
+      sub: string;
+      email: string;
+      role: string;
+    },
+  ) {
+    return this.orderService.findMyOrders(user.sub);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Query(() => Order)
+  order(
+    @Args('id', { type: () => ID })
+    id: string,
+
+    @CurrentUser()
+    user: {
+      sub: string;
+      email: string;
+      role: string;
+    },
+  ) {
+    return this.orderService.findMyOrder(user.sub, id);
+  }
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Query(() => [Order])
+  allOrders() {
+    return this.orderService.findAllOrders();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => Order)
+  cancelOrder(
+    @Args('id', { type: () => ID })
+    id: string,
+
+    @CurrentUser()
+    user: {
+      sub: string;
+      email: string;
+      role: string;
+    },
+  ) {
+    return this.orderService.cancelOrder(user.sub, id);
   }
 }

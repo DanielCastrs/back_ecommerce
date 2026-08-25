@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
-
+import { OrderStatus } from '../enums/order-status.enum';
 export type OrderDocument = HydratedDocument<Order>;
 
 @Schema({ _id: false })
@@ -59,9 +59,10 @@ export class Order {
 
   @Prop({
     required: true,
-    default: 'PENDING',
+    enum: OrderStatus,
+    default: OrderStatus.PENDING,
   })
-  status: string;
+  status: OrderStatus;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
