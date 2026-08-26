@@ -153,35 +153,56 @@ export class OrderService {
       throw new BadRequestException('ID do pedido inválido');
     }
 
-    const order = await this.orderModel.findOne({
-      _id: orderId,
-      userId: new Types.ObjectId(userId),
-    });
+    const session = await this.orderModel.db.startSession();
 
-    if (!order) {
-      throw new NotFoundException('Pedido não encontrado');
-    }
+    try {
+      session.startTransaction();
 
-    if (order.status !== OrderStatus.PENDING) {
-      throw new BadRequestException(
-        'Somente pedidos PENDING podem ser cancelados',
+      const order = await this.orderModel.findOne(
+        {
+          _id: orderId,
+          userId: new Types.ObjectId(userId),
+        },
+        null,
+        { session },
       );
-    }
 
-    for (const item of order.items) {
-      const product = await this.productModel.findById(item.productId).exec();
-
-      if (!product) {
-        throw new NotFoundException(`Produto ${item.name} não encontrado`);
+      if (!order) {
+        throw new NotFoundException('Pedido não encontrado');
       }
 
-      product.stock += item.quantity;
+      if (order.status !== OrderStatus.PENDING) {
+        throw new BadRequestException(
+          'Somente pedidos PENDING podem ser cancelados',
+        );
+      }
 
-      await product.save();
+      for (const item of order.items) {
+        const product = await this.productModel.findById(item.productId, null, {
+          session,
+        });
+
+        if (!product) {
+          throw new NotFoundException(`Produto ${item.name} não encontrado`);
+        }
+
+        product.stock += item.quantity;
+
+        await product.save({ session });
+      }
+
+      order.status = OrderStatus.CANCELLED;
+
+      await order.save({ session });
+
+      await session.commitTransaction();
+
+      return order;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      await session.endSession();
     }
-
-    order.status = OrderStatus.CANCELLED;
-
-    return order.save();
   }
 }

@@ -36,6 +36,11 @@ input CreateCategoryInput {
   name: String!
 }
 
+input CreatePaymentInput {
+  method: PaymentMethod!
+  orderId: ID!
+}
+
 input CreateProductInput {
   categoryId: ID!
   description: String
@@ -72,6 +77,7 @@ type Mutation {
   deleteProduct(id: ID!): Product!
   deleteUser(id: ID!): User!
   login(input: LoginInput!): AuthResponse!
+  payOrder(input: CreatePaymentInput!): Payment!
   removeFromCart(productId: String!): Cart!
   updateCartItem(input: UpdateCartItemInput!): Cart!
   updateCategory(input: UpdateCategoryInput!): Category!
@@ -101,6 +107,26 @@ enum OrderStatus {
   CANCELLED
   PAID
   PENDING
+}
+
+type Payment {
+  amount: Float!
+  createdAt: DateTime!
+  id: ID!
+  method: PaymentMethod!
+  orderId: ID!
+  status: PaymentStatus!
+}
+
+enum PaymentMethod {
+  BOLETO
+  CREDIT_CARD
+  PIX
+}
+
+enum PaymentStatus {
+  APPROVED
+  DECLINED
 }
 
 type Product {

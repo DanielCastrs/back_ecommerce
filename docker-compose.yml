@@ -3,10 +3,12 @@ services:
     image: mongo:8
     container_name: ecommerce-mongodb
     restart: unless-stopped
+
     ports:
       - '27017:27017'
-    environment:
-      MONGO_INITDB_DATABASE: ecommerce
+
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
+
     volumes:
       - mongodb_data:/data/db
 
