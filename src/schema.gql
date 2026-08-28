@@ -143,6 +143,7 @@ type Query {
   allOrders: [Order!]!
   categories: [Category!]!
   category(id: ID!): Category!
+  debugFindByEmail(email: String!): User
   me: User!
   myCart: Cart!
   order(id: ID!): Order!
@@ -181,7 +182,7 @@ input UpdateProductInput {
 
 input UpdateUserInput {
   email: String
-  id: ID!
+  id: String!
   name: String
   password: String
 }

@@ -1,5 +1,12 @@
 import { Field, Float, InputType, Int, ID } from '@nestjs/graphql';
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  Min,
+} from 'class-validator';
 
 @InputType()
 export class UpdateProductInput {

@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { CreateUserInput } from './dto/create-user.input';
 
 @Injectable()
 export class UserService {
@@ -13,16 +14,28 @@ export class UserService {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async create(data: { name: string; email: string; password: string }) {
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+  async create(input: CreateUserInput) {
+    const email = input.email.trim().toLowerCase();
+
+    const existingUser = await this.userModel.findOne({
+      email,
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Email já cadastrado');
+    }
+
+    const hashedPassword = await bcrypt.hash(input.password, 10);
 
     const user = new this.userModel({
-      ...data,
+      name: input.name.trim(),
+      email,
       password: hashedPassword,
     });
 
     return user.save();
   }
+
   async findAll() {
     return this.userModel.find().exec();
   }
@@ -88,7 +101,7 @@ export class UserService {
   }
 
   async findByEmail(email: string) {
-    return this.userModel.findOne({ email }).exec();
+    return this.userModel.findOne({ email: email }).exec();
   }
 
   async findByIdWithoutPassword(id: string) {

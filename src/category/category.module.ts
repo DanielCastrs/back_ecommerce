@@ -5,6 +5,7 @@ import { Category, CategorySchema } from './schemas/category.schema';
 
 import { CategoryResolver } from './category.resolver';
 import { CategoryService } from './category.service';
+import { Product, ProductSchema } from 'src/product/schemas/product.schema';
 
 @Module({
   imports: [
@@ -12,6 +13,10 @@ import { CategoryService } from './category.service';
       {
         name: Category.name,
         schema: CategorySchema,
+      },
+      {
+        name: Product.name,
+        schema: ProductSchema,
       },
     ]),
   ],

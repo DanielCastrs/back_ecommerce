@@ -44,7 +44,7 @@ export class OrderService {
       );
     }
 
-    //deu erro e precisou de interface StockUpdate, então criei a interface acima
+    //deu erro e precisou de interface StockUpdate, então criei a interface
 
     const orderItems: OrderItem[] = [];
     const stockUpdates: StockUpdate[] = [];
