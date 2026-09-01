@@ -8,8 +8,7 @@ import { Model, Types } from 'mongoose';
 import {
   Category,
   CategoryDocument,
-} from 'src/category/schemas/category.schema';
-
+} from '../category/schemas/category.schema';
 import { Product, ProductDocument } from './schemas/product.schema';
 
 @Injectable()

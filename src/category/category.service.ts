@@ -10,7 +10,7 @@ import { Model, Types } from 'mongoose';
 
 import { Category, CategoryDocument } from './schemas/category.schema';
 import { CreateCategoryInput } from './dto/create-category.input';
-import { Product, ProductDocument } from 'src/product/schemas/product.schema';
+import { Product, ProductDocument } from '../product/schemas/product.schema';
 
 @Injectable()
 export class CategoryService {
