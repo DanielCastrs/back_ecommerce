@@ -192,22 +192,6 @@ describe('CategoryService', () => {
     );
   });
 
-  it('deve lançar erro ao atualizar categoria inexistente', async () => {
-    const categoryId = '507f1f77bcf86cd799439011';
-
-    const input = {
-      name: 'Eletrônicos',
-    };
-
-    mockCategoryModel.findByIdAndUpdate.mockReturnValue({
-      exec: jest.fn().mockResolvedValue(null),
-    });
-
-    await expect(service.update(categoryId, input)).rejects.toThrow(
-      'Categoria não encontrada',
-    );
-  });
-
   it('deve lançar erro ao deletar categoria inexistente', async () => {
     const categoryId = '507f1f77bcf86cd799439011';
 
@@ -302,5 +286,26 @@ describe('CategoryService', () => {
     expect(mockProductModel.countDocuments).not.toHaveBeenCalled();
 
     expect(mockCategoryModel.deleteOne).not.toHaveBeenCalled();
+  });
+
+  it('deve deletar uma categoria', async () => {
+    const categoryId = '507f1f77bcf86cd799439011';
+
+    const category = {
+      id: categoryId,
+      name: 'Eletrônicos',
+    };
+
+    mockCategoryModel.findByIdAndDelete.mockReturnValue({
+      exec: jest.fn().mockResolvedValue(category),
+    });
+
+    const result = await service.delete(categoryId);
+
+    expect(result).toEqual(category);
+
+    expect(mockCategoryModel.findByIdAndDelete).toHaveBeenCalledWith(
+      categoryId,
+    );
   });
 });

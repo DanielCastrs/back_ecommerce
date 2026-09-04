@@ -5,7 +5,7 @@ import { Category } from './entities/category.entity';
 import { CategoryService } from './category.service';
 import { UpdateCategoryInput } from './dto/update-category.input';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Resolver(() => Category)
 export class CategoryResolver {

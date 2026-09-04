@@ -6,9 +6,9 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Payment, PaymentDocument } from './schemas/payment.schema';
-import { Order, OrderDocument } from 'src/order/schemas/order.schema';
+import { Order, OrderDocument } from '../order/schemas/order.schema';
 import { PaymentMethod } from './enums/payment-method.enum';
-import { OrderStatus } from 'src/order/enums/order-status.enum';
+import { OrderStatus } from '../order/enums/order-status.enum';
 import { PaymentStatus } from './enums/payment-status.enum';
 
 @Injectable()
