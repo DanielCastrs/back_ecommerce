@@ -1,173 +1,91 @@
-# 🛒 Ecommerce API — NestJS + GraphQL + MongoDB
+# 🛒 Ecommerce API --- NestJS + GraphQL + MongoDB {#shopping_cart-ecommerce-api--nestjs--graphql--mongodb}
 
-Projeto pessoal desenvolvido com o objetivo de **aprender e praticar o desenvolvimento de APIs GraphQL** utilizando **NestJS, TypeScript, Apollo Server e MongoDB**.
+API backend de um e-commerce desenvolvida para praticar **NestJS,
+TypeScript, GraphQL, Apollo Server, Mongoose, MongoDB, autenticação JWT,
+autorização por roles, testes automatizados e Docker**.
 
-A aplicação simula o backend de um e-commerce, permitindo praticar conceitos como:
+O projeto evoluiu de um CRUD inicial para uma aplicação modular com
+**usuários, autenticação, autorização, produtos, categorias, carrinho,
+pedidos, controle de estoque e pagamento simulado**.
 
-- GraphQL
-- Queries
-- Mutations
+> ⚠️ Projeto exclusivamente educacional. Não possui finalidade comercial
+> e não deve ser utilizado diretamente em produção sem adequações de
+> segurança, infraestrutura e observabilidade.
+
+---
+
+## 🎯 Objetivo {#dart-objetivo}
+
+O projeto foi construído de forma incremental, começando pelos
+fundamentos de uma API GraphQL e evoluindo para regras de negócio e
+infraestrutura.
+
+Principais conceitos praticados:
+
+- GraphQL Code First
+- Queries e Mutations
 - Resolvers
-- Inputs
-- Services
-- MongoDB
-- Mongoose
-- CRUD
-- Relacionamento entre documentos
-- Validações
-- Autenticação
-- JWT
+- Inputs / DTOs
+- Services e Dependency Injection
 - Arquitetura modular do NestJS
-
-> ⚠️ Este é um projeto exclusivamente educacional e não possui finalidade comercial.
-
----
-
-## 🎯 Objetivo do projeto
-
-O principal objetivo é construir um backend de e-commerce do zero, evoluindo a aplicação gradualmente e aplicando boas práticas de desenvolvimento.
-
-Durante o projeto serão explorados conceitos de:
-
-- API GraphQL
-- Arquitetura Code First
-- NestJS
-- TypeScript
-- Mongoose
-- MongoDB
-- Modelagem de dados
-- Relacionamento entre documentos
-- Regras de negócio
-- Autenticação e autorização
-- Tratamento de erros
-- Testes automatizados
-- Docker
+- MongoDB e Mongoose
+- Relacionamentos por ObjectId
+- Validações e tratamento de exceções
+- Autenticação com JWT
+- Hash de senhas com bcrypt
+- Autorização por roles
+- Carrinho e pedidos
+- Controle de estoque
+- Pagamento simulado
+- Testes automatizados com Jest
+- Docker e Docker Compose
+- Replica Set do MongoDB
+- Healthcheck e inicialização automatizada do ambiente
 
 ---
 
-# 🚀 Tecnologias utilizadas
+# 🏗️ Arquitetura {#building_construction-arquitetura}
 
-- [NestJS](https://nestjs.com/) — framework para aplicações Node.js
-- [TypeScript](https://www.typescriptlang.org/) — linguagem utilizada no projeto
-- [GraphQL](https://graphql.org/) — linguagem de consulta para APIs
-- [Apollo Server](https://www.apollographql.com/) — servidor GraphQL
-- [Mongoose](https://mongoosejs.com/) — ODM para MongoDB
-- [MongoDB](https://www.mongodb.com/) — banco de dados NoSQL
-- [Docker](https://www.docker.com/) — containerização do banco de dados
-- ESLint — análise e padronização do código
-- Prettier — formatação do código
-
----
-
-# 📋 Pré-requisitos
-
-Antes de executar o projeto, é necessário ter instalado:
-
-- Node.js
-- NPM
-- Docker
-- Docker Desktop
-
-Recomenda-se utilizar uma versão LTS do Node.js.
-
-Para verificar as instalações:
-
-```bash
-node --version
-npm --version
-docker --version
-docker compose version
-```
-
----
-
-# 📁 Estrutura do projeto
-
-A aplicação utiliza a arquitetura modular do NestJS.
+A aplicação utiliza a arquitetura modular do NestJS. Cada domínio possui
+seus próprios componentes e responsabilidades.
 
 ```text
-src/
-│
-├── product/
-│   ├── dto/
-│   │   ├── create-product.input.ts
-│   │   └── update-product.input.ts
-│   │
-│   ├── entities/
-│   │   └── product.entity.ts
-│   │
-│   ├── schemas/
-│   │   └── product.schema.ts
-│   │
-│   ├── product.module.ts
-│   ├── product.resolver.ts
-│   └── product.service.ts
-│
-├── category/
-│   ├── dto/
-│   │   ├── create-category.input.ts
-│   │   └── update-category.input.ts
-│   │
-│   ├── entities/
-│   │   └── category.entity.ts
-│   │
-│   ├── schemas/
-│   │   └── category.schema.ts
-│   │
-│   ├── category.module.ts
-│   ├── category.resolver.ts
-│   └── category.service.ts
-│
-├── app.module.ts
-├── app.controller.ts
-└── app.service.ts
+                         CLIENTE
+                            │
+                            ▼
+                    ┌────────────────┐
+                    │  GraphQL API   │
+                    │    /graphql    │
+                    └───────┬────────┘
+                            │
+                            ▼
+                    ┌────────────────┐
+                    │    Resolver    │
+                    │ Query/Mutation │
+                    └───────┬────────┘
+                            │
+                            ▼
+                    ┌────────────────┐
+                    │    Service     │
+                    │ Regras negócio │
+                    └───────┬────────┘
+                            │
+                            ▼
+                    ┌────────────────┐
+                    │    Mongoose    │
+                    │      ODM       │
+                    └───────┬────────┘
+                            │
+                            ▼
+                    ┌────────────────┐
+                    │    MongoDB     │
+                    │   Replica Set  │
+                    └────────────────┘
 ```
 
-### Responsabilidade das principais camadas
+### Fluxo de uma requisição
 
-| Camada          | Responsabilidade                                         |
-| --------------- | -------------------------------------------------------- |
-| **Resolver**    | Recebe as requisições GraphQL e direciona para o Service |
-| **Service**     | Contém as regras de negócio e comunicação com os Models  |
-| **Entity**      | Define os objetos disponibilizados pelo GraphQL          |
-| **DTO / Input** | Define os dados recebidos pelas Queries e Mutations      |
-| **Schema**      | Define a estrutura dos documentos no MongoDB             |
-| **Module**      | Organiza e encapsula cada domínio da aplicação           |
-| **Mongoose**    | Faz a comunicação entre NestJS e MongoDB                 |
-| **MongoDB**     | Armazena os dados da aplicação                           |
-
----
-
-# 🧩 Arquitetura
-
-A comunicação principal da aplicação segue o fluxo:
-
-```text
-                    Cliente
-                       │
-                       ▼
-                  GraphQL API
-                       │
-              ┌────────┴────────┐
-              │                 │
-            Query            Mutation
-              │                 │
-              ▼                 ▼
-           Resolver          Resolver
-              │                 │
-              └────────┬────────┘
-                       │
-                       ▼
-                    Service
-                       │
-                       ▼
-                   Mongoose
-                       │
-                       ▼
-                    MongoDB
-```
-
-### Exemplo do fluxo de uma consulta
+Exemplo: `query products`.
 
 ```text
 Cliente
@@ -183,215 +101,251 @@ ProductResolver
 ProductService
    │
    ▼
-Mongoose
+Mongoose Model
    │
    ▼
 MongoDB
+   │
+   ▼
+ProductService
+   │
+   ▼
+ProductResolver
+   │
+   ▼
+Resposta GraphQL
+```
+
+A ideia é manter o Resolver focado na camada GraphQL e concentrar as
+regras de negócio nos Services.
+
+---
+
+# 📁 Estrutura da aplicação {#file_folder-estrutura-da-aplicação}
+
+```text
+src/
+│
+├── auth/
+│   ├── decorators/
+│   │   ├── current-user.decorator.ts
+│   │   └── roles.decorator.ts
+│   ├── guards/
+│   │   ├── jwt-auth.guard.ts
+│   │   └── roles.guard.ts
+│   ├── auth.module.ts
+│   ├── auth.resolver.ts
+│   └── auth.service.ts
+│
+├── product/
+│   ├── dto/
+│   │   ├── create-product.input.ts
+│   │   └── update-product.input.ts
+│   ├── entities/
+│   │   └── product.entity.ts
+│   ├── schemas/
+│   │   └── product.schema.ts
+│   ├── product.module.ts
+│   ├── product.resolver.ts
+│   └── product.service.ts
+│
+├── category/
+│   ├── dto/
+│   ├── entities/
+│   ├── schemas/
+│   ├── category.module.ts
+│   ├── category.resolver.ts
+│   └── category.service.ts
+│
+├── user/
+│   ├── dto/
+│   ├── entities/
+│   ├── enums/
+│   │   └── user-role.enum.ts
+│   ├── schemas/
+│   │   ├── user.schema.ts
+│   │   └── ...
+│   ├── user.module.ts
+│   ├── user.resolver.ts
+│   └── user.service.ts
+│
+├── cart/
+│   ├── entities/
+│   ├── schemas/
+│   ├── cart.module.ts
+│   ├── cart.resolver.ts
+│   └── cart.service.ts
+│
+├── order/
+│   ├── dto/
+│   ├── entities/
+│   ├── schemas/
+│   ├── order.module.ts
+│   ├── order.resolver.ts
+│   └── order.service.ts
+│
+├── payment/
+│   ├── entities/
+│   ├── payment.module.ts
+│   ├── payment.resolver.ts
+│   └── payment.service.ts
+│
+├── app.module.ts
+├── app.controller.ts
+└── app.service.ts
+```
+
+> A estrutura pode evoluir conforme novos recursos forem adicionados.
+
+---
+
+# 🧩 Responsabilidade dos componentes {#jigsaw-responsabilidade-dos-componentes}
+
+Componente Responsabilidade
+
+---
+
+**Module** Organiza e encapsula um domínio
+**Resolver** Recebe Queries/Mutations GraphQL
+**Service** Concentra regras de negócio
+**Entity** Define tipos disponibilizados pelo GraphQL
+**DTO / Input** Define dados de entrada da API
+**Schema** Define documentos persistidos no MongoDB
+**Guard** Controla acesso aos recursos
+**Decorator** Adiciona metadados e facilita acesso ao contexto
+**Mongoose** Comunicação entre NestJS e MongoDB
+**MongoDB** Persistência dos dados
+
+---
+
+# 🧱 Módulos e responsabilidades {#bricks-módulos-e-responsabilidades}
+
+## 🔐 Auth {#closed_lock_with_key-auth}
+
+Responsável por autenticação e segurança relacionada ao acesso.
+
+Fluxo:
+
+```text
+email + senha
+     │
+     ▼
+AuthResolver
+     │
+     ▼
+AuthService
+     │
+     ├── UserService.findByEmail()
+     │
+     ├── bcrypt.compare()
+     │
+     └── JwtService.signAsync()
+     │
+     ▼
+accessToken
+```
+
+O JWT contém:
+
+```text
+sub
+email
+role
+```
+
+### JwtAuthGuard
+
+Valida:
+
+1.  Header `Authorization`
+2.  Formato `Bearer <token>`
+3.  Assinatura e validade do JWT
+4.  Payload do usuário
+
+Após a validação, o payload fica disponível em `request.user`.
+
+### RolesGuard
+
+A aplicação possui atualmente:
+
+```text
+USER
+ADMIN
+```
+
+Recursos administrativos podem utilizar:
+
+```typescript
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
+```
+
+Fluxo:
+
+```text
+Request
+   │
+   ▼
+JwtAuthGuard
+   │
+   ▼
+Token válido?
+   │
+   ▼
+RolesGuard
+   │
+   ├── role permitida → acesso
+   │
+   └── role não permitida → Forbidden
 ```
 
 ---
 
-# 🐳 Banco de dados com Docker
+## 👤 User {#bust_in_silhouette-user}
 
-O MongoDB utilizado pelo projeto é executado através do Docker Compose.
+Responsável pelo gerenciamento dos usuários.
 
-Na raiz do projeto deve existir um arquivo:
+Recursos implementados:
 
-```text
-docker-compose.yml
-```
+- Criar usuário
+- Listar usuários
+- Buscar usuário
+- Atualizar usuário
+- Remover usuário
+- Consultar o usuário autenticado (`me`)
+- Atualizar próprio perfil
+- Roles `USER` e `ADMIN`
 
-Para iniciar o banco:
-
-```bash
-docker compose up -d
-```
-
-O parâmetro `-d` executa os containers em segundo plano.
-
-Para verificar os containers:
-
-```bash
-docker compose ps
-```
-
-Para visualizar os logs:
-
-```bash
-docker compose logs -f
-```
-
-Para parar os containers:
-
-```bash
-docker compose down
-```
-
-> O Docker Desktop precisa estar aberto e em execução antes de executar os comandos acima.
+As senhas são armazenadas utilizando hash com bcrypt.
 
 ---
 
-# 🔐 Variáveis de ambiente
+## 🛍️ Product {#shopping-product}
 
-O projeto utiliza variáveis de ambiente para configurar a conexão com o MongoDB.
+Responsável pelos produtos e pelo estoque associado ao produto.
 
-Crie um arquivo `.env` na raiz do projeto:
+Principais operações:
 
 ```text
-.env
+createProduct
+products
+product
+updateProduct
+deleteProduct
+```
+
+Um produto possui informações como:
+
+```text
+id
+name
+price
+stock
+description
+categoryId
 ```
 
 Exemplo:
-
-```env
-MONGODB_URI=mongodb://localhost:27017/ecommerce
-```
-
-> Não envie o arquivo `.env` para o GitHub caso ele contenha informações sensíveis.
-
-Adicione o arquivo ao `.gitignore`:
-
-```text
-.env
-```
-
-Se o projeto utilizar um arquivo `.env.example`, copie-o antes de executar a aplicação:
-
-```bash
-cp .env.example .env
-```
-
-No Windows, também é possível criar o arquivo `.env` manualmente.
-
----
-
-# 📦 Instalação
-
-Clone o repositório:
-
-```bash
-git clone <URL_DO_REPOSITORIO>
-```
-
-Entre na pasta do projeto:
-
-```bash
-cd ecommerce-api
-```
-
-Instale as dependências:
-
-```bash
-npm install
-```
-
----
-
-# ▶️ Executando o projeto
-
-## 1. Iniciar o MongoDB
-
-Na raiz do projeto:
-
-```bash
-docker compose up -d
-```
-
-Confirme se o container está executando:
-
-```bash
-docker compose ps
-```
-
----
-
-## 2. Instalar dependências
-
-```bash
-npm install
-```
-
----
-
-## 3. Iniciar a aplicação
-
-Modo desenvolvimento:
-
-```bash
-npm run start:dev
-```
-
-Após a aplicação iniciar, o servidor estará disponível em:
-
-```text
-http://localhost:3000
-```
-
-A interface GraphQL estará disponível em:
-
-```text
-http://localhost:3000/graphql
-```
-
----
-
-# 🔄 Ordem recomendada para executar
-
-Para facilitar a execução do projeto:
-
-```bash
-# 1. Iniciar o MongoDB
-docker compose up -d
-
-# 2. Instalar dependências
-npm install
-
-# 3. Iniciar a aplicação
-npm run start:dev
-```
-
-Depois acesse:
-
-```text
-http://localhost:3000/graphql
-```
-
----
-
-# 📌 GraphQL
-
-A aplicação utiliza a abordagem **Code First** do NestJS.
-
-Os tipos GraphQL são definidos através de decorators TypeScript como:
-
-```typescript
-@ObjectType()
-@InputType()
-@Field()
-@Query()
-@Mutation()
-@Resolver()
-```
-
-O schema GraphQL é gerado automaticamente a partir dessas definições.
-
----
-
-# 🛍️ Product CRUD
-
-O módulo `Product` possui as seguintes operações:
-
-```text
-Create Product
-Read All Products
-Read One Product
-Update Product
-Delete Product
-```
-
----
-
-## 🔎 Listar produtos
 
 ```graphql
 query {
@@ -408,331 +362,649 @@ query {
 
 ---
 
-## 🔎 Buscar produto por ID
+## 🗂️ Category {#card_index_dividers-category}
 
-```graphql
-query {
-  product(id: "PRODUCT_ID") {
-    id
-    name
-    price
-    stock
-    description
-    categoryId
-  }
-}
-```
+Responsável pelo gerenciamento das categorias.
 
----
-
-## ➕ Criar produto
-
-Como o produto possui relacionamento com categoria, é necessário informar um `categoryId`.
-
-```graphql
-mutation {
-  createProduct(
-    input: {
-      name: "Notebook Dell"
-      price: 3500
-      stock: 10
-      description: "Notebook para trabalho"
-      categoryId: "CATEGORY_ID"
-    }
-  ) {
-    id
-    name
-    price
-    stock
-    description
-    categoryId
-  }
-}
-```
-
----
-
-## ✏️ Atualizar produto
-
-```graphql
-mutation {
-  updateProduct(input: { id: "PRODUCT_ID", price: 3200, stock: 15 }) {
-    id
-    name
-    price
-    stock
-    description
-    categoryId
-  }
-}
-```
-
----
-
-## 🗑️ Excluir produto
-
-```graphql
-mutation {
-  deleteProduct(id: "PRODUCT_ID") {
-    id
-    name
-    price
-    stock
-  }
-}
-```
-
----
-
-# 🗂️ Category CRUD
-
-O módulo `Category` possui:
+Principais operações:
 
 ```text
-Create Category
-Read All Categories
-Read One Category
-Update Category
-Delete Category
+createCategory
+categories
+category
+updateCategory
+deleteCategory
 ```
+
+O cadastro possui validação para evitar categorias duplicadas
+considerando o nome sem diferenciação entre maiúsculas e minúsculas.
 
 ---
 
-## ➕ Criar categoria
+# 🔗 Product × Category {#link-product--category}
 
-```graphql
-mutation {
-  createCategory(
-    input: { name: "Eletrônicos", description: "Produtos eletrônicos" }
-  ) {
-    id
-    name
-    description
-  }
-}
-```
-
----
-
-## 🔎 Listar categorias
-
-```graphql
-query {
-  categories {
-    id
-    name
-    description
-  }
-}
-```
-
----
-
-## 🔎 Buscar categoria
-
-```graphql
-query {
-  category(id: "CATEGORY_ID") {
-    id
-    name
-    description
-  }
-}
-```
-
----
-
-## ✏️ Atualizar categoria
-
-```graphql
-mutation {
-  updateCategory(
-    input: {
-      id: "CATEGORY_ID"
-      name: "Eletrônicos e Informática"
-      description: "Computadores, notebooks e acessórios"
-    }
-  ) {
-    id
-    name
-    description
-  }
-}
-```
-
----
-
-## 🗑️ Excluir categoria
-
-```graphql
-mutation {
-  deleteCategory(id: "CATEGORY_ID") {
-    id
-    name
-    description
-  }
-}
-```
-
----
-
-# 🔗 Relacionamento Product + Category
-
-O relacionamento entre Product e Category utiliza uma referência através do MongoDB/Mongoose.
+O relacionamento é realizado através de `categoryId`.
 
 ```text
-Product
-│
-├── id
-├── name
-├── price
-├── stock
-├── description
-│
-└── categoryId
-        │
-        ▼
-     Category
-        │
-        ├── id
-        ├── name
-        └── description
+┌──────────────┐
+│   Product    │
+├──────────────┤
+│ id           │
+│ name         │
+│ price        │
+│ stock        │
+│ description  │
+│ categoryId ──┼────────┐
+└──────────────┘        │
+                        ▼
+                 ┌──────────────┐
+                 │   Category   │
+                 ├──────────────┤
+                 │ id           │
+                 │ name         │
+                 │ description  │
+                 └──────────────┘
 ```
 
-O `categoryId` armazenado no Product representa o `_id` da Category.
+Antes de criar um produto relacionado a uma categoria, a aplicação
+verifica se a categoria existe.
+
+---
+
+## 🛒 Cart {#shopping_cart-cart}
+
+O carrinho é associado ao usuário e contém itens com:
+
+```text
+productId
+quantity
+```
+
+Principais operações internas:
+
+```text
+findOrCreate
+addToCart
+updateCartItem
+removeFromCart
+clearCart
+```
+
+### Regras implementadas
+
+- Quantidade deve ser maior que zero
+- `productId` deve ser válido
+- Produto precisa existir
+- Quantidade não pode ultrapassar o estoque
+- Ao adicionar um produto existente, a quantidade é acumulada
+- A quantidade acumulada também é validada
+- Produto inexistente no carrinho não pode ser atualizado/removido
+- Carrinho inexistente é tratado com exceção
+
+---
+
+## 📦 Order {#package-order}
+
+Responsável pelo fluxo de pedidos.
+
+O pedido integra conceitos de:
+
+```text
+Usuário
+   │
+   ▼
+Carrinho
+   │
+   ▼
+Produtos
+   │
+   ├── Quantidade
+   ├── Preço
+   └── Estoque
+   │
+   ▼
+Pedido
+   │
+   ▼
+Pagamento
+```
+
+O domínio possui seus próprios DTOs, entities e schemas.
+
+---
+
+## 📊 Estoque {#bar_chart-estoque}
+
+O estoque é representado pelo campo:
+
+```text
+Product.stock
+```
+
+As regras de estoque são utilizadas nas operações do carrinho e do
+pedido para impedir solicitações acima da quantidade disponível.
+
+---
+
+## 💳 Payment {#credit_card-payment}
+
+O projeto possui um módulo de pagamento simulado.
+
+O objetivo é praticar a separação de responsabilidades e representar o
+fluxo de pagamento de um e-commerce sem integração com um gateway
+financeiro real.
+
+---
+
+# 🧪 Testes {#test_tube-testes}
+
+O projeto possui testes automatizados com **Jest**.
+
+São testados componentes como:
+
+- Services
+- Resolvers
+- Guards
+- Autenticação
+- Autorização
+- Carrinho
+- Regras de negócio
+- Tratamento de exceções
+
+Entre os cenários:
+
+- CRUD
+- Validações
+- Usuário não encontrado
+- Senha inválida
+- Hash com bcrypt
+- Geração de JWT
+- Payload do JWT
+- Token inválido/ausente
+- Controle de roles
+- Operações do carrinho
+
+Executar:
+
+```bash
+npm test
+```
+
+Modo watch:
+
+```bash
+npm run test:watch
+```
+
+Cobertura:
+
+```bash
+npm run test:cov
+```
+
+---
+
+# 🐳 Docker {#whale-docker}
+
+O ambiente foi preparado para ser facilmente replicado por outro
+desenvolvedor.
+
+É possível executar **API + MongoDB** sem instalar Node.js ou MongoDB
+diretamente na máquina.
+
+O Compose utiliza três serviços:
+
+```text
+mongodb
+mongo-init
+api
+```
+
+## Fluxo de inicialização
+
+```text
+┌─────────────┐
+│   mongodb   │
+└──────┬──────┘
+       │
+       │ healthcheck
+       ▼
+┌─────────────┐
+│  mongo-init │
+│             │
+│ verifica o  │
+│ Replica Set │
+└──────┬──────┘
+       │
+       │ concluído
+       ▼
+┌─────────────┐
+│     api     │
+│   NestJS    │
+└─────────────┘
+```
+
+O serviço `mongo-init` inicializa automaticamente o Replica Set `rs0`
+caso ainda não exista.
+
+Isso elimina a necessidade de executar manualmente comandos como
+`rs.initiate()` após clonar o projeto.
+
+---
+
+# 🐳 Dockerfile {#whale-dockerfile}
+
+A API utiliza **multi-stage build**:
+
+```dockerfile
+# ---------- Stage 1: build ----------
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+# ---------- Stage 2: production ----------
+FROM node:22-alpine AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+
+CMD ["node", "dist/main"]
+```
+
+### Builder
+
+Instala dependências de desenvolvimento e compila a aplicação:
+
+```text
+TypeScript
+   │
+   ▼
+npm run build
+   │
+   ▼
+dist/
+```
+
+### Production
+
+A imagem final contém:
+
+- Node.js
+- Dependências de produção
+- Código compilado em `dist/`
+
+As dependências de desenvolvimento não são copiadas para a imagem final.
+
+---
+
+# 💾 Persistência {#floppy_disk-persistência}
+
+O MongoDB utiliza o volume:
+
+```text
+mongodb_data
+```
+
+Portanto:
+
+```bash
+docker compose down
+```
+
+mantém os dados.
+
+Enquanto:
+
+```bash
+docker compose down -v
+```
+
+remove também o volume e realiza um reset completo do banco.
+
+> ⚠️ `down -v` apaga os dados do MongoDB.
+
+---
+
+# 🔐 Variáveis de ambiente {#closed_lock_with_key-variáveis-de-ambiente}
+
+O projeto utiliza:
+
+```text
+MONGODB_URI
+JWT_SECRET
+```
+
+Crie o ambiente local a partir do exemplo:
+
+```bash
+cp .env.example .env
+```
 
 Exemplo:
 
-```text
-Product
-categoryId = 68xxxxxxxxxxxxxxxxxxxx
-
-            │
-            ▼
-
-Category
-_id = 68xxxxxxxxxxxxxxxxxxxx
+```env
+MONGODB_URI=mongodb://mongodb:27017/ecommerce?replicaSet=rs0
+JWT_SECRET=coloque-um-segredo-aleatorio-aqui
 ```
 
-O relacionamento impede a criação de produtos associados a categorias inexistentes.
+### Por que `mongodb` e não `localhost`?
+
+Dentro da rede Docker, a API encontra o MongoDB pelo nome do serviço:
+
+```text
+api → mongodb:27017
+```
+
+`localhost` dentro do container da API apontaria para o próprio
+container da API, e não para o MongoDB.
+
+O `.env` não deve ser enviado ao GitHub.
+
+Para gerar um segredo JWT:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
 
 ---
 
-# 🗺️ Roadmap do projeto
+# ▶️ Executando o projeto {#arrow_forward-executando-o-projeto}
 
-A evolução planejada do projeto é:
+## Pré-requisitos
 
-```text
-1. Product CRUD                 ✅
-2. Category CRUD                ✅
-3. Product + Category           ✅
-4. User CRUD                    ✅
-5. bcrypt                       ✅
-6. Login                        ✅
-7. JWT                          ✅
-8. JWT Guard                    ✅
-9. CurrentUser / me             ✅
-10. Roles / Authorization       ✅
-11. Carrinho                    ✅
-12. Pedido / Order              ✅
-13. Estoque                     ✅
-14. Pagamento simulado          ✅
-15. Validações                  ✅
-16. Testes                      🚧
-17. Docker + Deploy             ⏳
+Instale:
+
+- Docker
+- Docker Desktop
+
+Não é necessário instalar Node.js ou MongoDB diretamente quando o
+projeto é executado via Docker.
+
+Verifique:
+
+```bash
+docker --version
+docker compose version
 ```
 
-### Legenda
+## 1. Clonar {#1-clonar}
 
-- ✅ Concluído
-- 🚧 Em desenvolvimento
-- ⏳ Planejado
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd ecommerce-api
+```
+
+## 2. Criar `.env` {#2-criar-env}
+
+```bash
+cp .env.example .env
+```
+
+Configure o `JWT_SECRET`.
+
+## 3. Subir o ambiente {#3-subir-o-ambiente}
+
+```bash
+docker compose up -d --build
+```
+
+Na primeira execução a API será construída.
+
+Nas próximas:
+
+```bash
+docker compose up -d
+```
+
+## 4. Verificar {#4-verificar}
+
+```bash
+docker compose ps
+```
+
+## 5. GraphQL {#5-graphql}
+
+```text
+http://localhost:3000/graphql
+```
 
 ---
 
-# 📚 Aprendizados
+# 🛠️ Comandos úteis {#hammer_and_wrench-comandos-úteis}
 
-Durante o desenvolvimento do projeto estão sendo praticados:
+```bash
+# Subir
+docker compose up -d
+
+# Subir reconstruindo as imagens
+docker compose up -d --build
+
+# Ver status
+docker compose ps
+
+# Logs de todos os serviços
+docker compose logs -f
+
+# Logs da API
+docker compose logs -f api
+
+# Parar containers mantendo dados
+docker compose down
+
+# Reset completo, incluindo dados do MongoDB
+docker compose down -v
+
+# Conferir a URI recebida pela API
+docker exec ecommerce-api printenv MONGODB_URI
+```
+
+---
+
+# 📡 GraphQL {#satellite-graphql}
+
+A aplicação utiliza **GraphQL Code First**.
+
+O schema é definido através de decorators TypeScript:
+
+```typescript
+@ObjectType()
+@InputType()
+@Field()
+@Query()
+@Mutation()
+@Resolver()
+```
+
+O NestJS gera automaticamente o schema GraphQL.
+
+Endpoint:
+
+```text
+http://localhost:3000/graphql
+```
+
+---
+
+# 🛡️ Tratamento de erros {#shield-tratamento-de-erros}
+
+A aplicação utiliza exceções do NestJS para representar situações
+inválidas ou recursos inexistentes.
+
+Exemplos utilizados no projeto:
+
+```text
+BadRequestException
+UnauthorizedException
+ForbiddenException
+NotFoundException
+ConflictException
+```
+
+Exemplos de regras:
+
+```text
+ID inválido
+      ↓
+BadRequestException
+
+Usuário não encontrado
+      ↓
+NotFoundException
+
+Token inválido
+      ↓
+UnauthorizedException
+
+Role sem permissão
+      ↓
+ForbiddenException
+
+Categoria duplicada
+      ↓
+ConflictException
+```
+
+---
+
+# 🔒 Boas práticas aplicadas {#lock-boas-práticas-aplicadas}
+
+O projeto busca manter:
+
+- Separação de responsabilidades
+- Arquitetura modular
+- Services para regras de negócio
+- Resolvers focados em GraphQL
+- Schemas separados das Entities
+- DTOs/Inputs para entrada de dados
+- Senhas com bcrypt
+- JWT para autenticação
+- Guards para proteção
+- Roles para autorização
+- Variáveis de ambiente
+- `.env` fora do Git
+- `.env.example` versionado
+- `.gitignore`
+- `.dockerignore`
+- Docker multi-stage
+- Validação de referências
+- Tratamento de exceções
+- Testes automatizados
+
+---
+
+# 📈 Roadmap {#chart_with_upwards_trend-roadmap}
+
+```text
+1.  Product CRUD                  ✅
+2.  Category CRUD                ✅
+3.  Product + Category           ✅
+4.  User CRUD                    ✅
+5.  bcrypt                       ✅
+6.  Login                        ✅
+7.  JWT                          ✅
+8.  JWT Guard                    ✅
+9.  CurrentUser / me             ✅
+10. Roles / Authorization        ✅
+11. Carrinho                     ✅
+12. Pedido / Order               ✅
+13. Estoque                      ✅
+14. Pagamento simulado           ✅
+15. Validações                   ✅
+16. Testes automatizados         ✅
+17. Docker                       ✅
+18. Deploy                       🚧
+```
+
+---
+
+# 📚 Stack {#books-stack}
+
+### Aplicação
 
 - NestJS
 - TypeScript
 - GraphQL
 - Apollo Server
 - GraphQL Code First
-- Queries
-- Mutations
-- Resolvers
-- Inputs
-- Object Types
-- Services
-- Modules
-- Mongoose
+
+### Banco
+
 - MongoDB
-- CRUD
-- Relacionamento entre documentos
-- ObjectId
-- Referências utilizando Mongoose
-- Tratamento de erros
-- `NotFoundException`
-- Variáveis de ambiente
-- Docker
-- Docker Compose
-- ESLint
-- Prettier
-- Boas práticas de organização de código
+- Mongoose
+- MongoDB Replica Set
 
----
+### Segurança
 
-# 🧪 Testes
+- bcrypt
+- JWT
+- Guards
+- Roles
 
-Os testes automatizados serão adicionados durante uma etapa posterior do projeto.
-
-A previsão é implementar:
-
-```text
-Unit Tests
-Integration Tests
-E2E Tests
-```
-
-Ferramentas previstas:
+### Qualidade
 
 - Jest
-- Supertest
+- ESLint
+- Prettier
+
+### Infraestrutura
+
+- Docker
+- Docker Compose
+- Node.js 22 Alpine
+- Multi-stage build
+- Docker Volume
+- Healthcheck
+- `depends_on` com condições
+- Inicialização automática do Replica Set
 
 ---
 
-# 🛡️ Boas práticas
+# 🎯 Resultado atual {#dart-resultado-atual}
 
-O projeto busca seguir algumas boas práticas:
+O projeto deixou de ser apenas um CRUD e passou a representar um backend
+de e-commerce com diferentes camadas de responsabilidade:
 
-- Separação de responsabilidades
-- Arquitetura modular
-- Services para regras de negócio
-- Resolvers focados na camada GraphQL
-- Schemas separados das Entities
-- DTOs/Inputs para entrada de dados
-- Variáveis de ambiente
-- `.gitignore`
-- Validação de referências entre documentos
-- Tratamento de erros
+```text
+                    ECOMMERCE API
+                         │
+        ┌────────────────┼────────────────┐
+        │                │                │
+     GraphQL          Segurança       Domínios
+        │                │                │
+   Resolvers       JWT + bcrypt      Product
+        │           Guards + Roles    Category
+     Services                         User
+        │                              Cart
+     Mongoose                         Order
+        │                              Payment
+     MongoDB
+        │
+   Replica Set
+        │
+      Docker
+```
+
+O próximo grande objetivo é disponibilizar essa aplicação em um ambiente
+de **deploy**, mantendo a separação entre configuração local e produção.
 
 ---
 
-# 📊 Status do projeto
+# 📄 Licença {#page_facing_up-licença}
 
-🚧 **Em desenvolvimento**
-
-Este projeto está sendo construído progressivamente como laboratório de estudos de:
-
-**NestJS + TypeScript + GraphQL + Mongoose + MongoDB.**
-
-Novos recursos serão adicionados conforme o avanço dos estudos.
-
----
-
-# 📄 Licença
-
-Este projeto é destinado exclusivamente para fins de estudo e aprendizado.
+Projeto desenvolvido exclusivamente para fins de estudo e aprendizado.
 
 Uso livre para fins educacionais.

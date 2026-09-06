@@ -3,14 +3,43 @@ services:
     image: mongo:8
     container_name: ecommerce-mongodb
     restart: unless-stopped
-
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
     ports:
       - '27017:27017'
-
-    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
-
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test: mongosh --eval "db.adminCommand('ping')" --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo-init:
+    image: mongo:8
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: 'no'
+    entrypoint: >
+      mongosh --host mongodb --eval "
+        try {
+          rs.status();
+        } catch (e) {
+          rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongodb:27017' }] });
+        }
+      "
+
+  api:
+    build: .
+    container_name: ecommerce-api
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
 
 volumes:
   mongodb_data:
