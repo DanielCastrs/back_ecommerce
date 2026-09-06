@@ -1,5 +1,6 @@
 import { Field, Float, ID, InputType, Int } from '@nestjs/graphql';
 import {
+  IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -32,5 +33,7 @@ export class CreateProductInput {
   description?: string;
 
   @Field(() => ID)
+  @IsMongoId()
+  @IsNotEmpty()
   categoryId: string;
 }

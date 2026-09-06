@@ -6,11 +6,14 @@ import {
   IsNumber,
   IsPositive,
   Min,
+  IsMongoId,
 } from 'class-validator';
 
 @InputType()
 export class UpdateProductInput {
   @Field(() => ID)
+  @IsMongoId()
+  @IsNotEmpty()
   id: string;
 
   @Field({ nullable: true })
@@ -37,5 +40,7 @@ export class UpdateProductInput {
   description?: string;
 
   @Field(() => ID, { nullable: true })
+  @IsOptional()
+  @IsMongoId()
   categoryId?: string;
 }
