@@ -24,7 +24,7 @@ import { PaymentModule } from './payment/payment.module';
       inject: [ConfigService],
 
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
+        uri: configService.get<string>('MONGODB_URI'),
       }),
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
